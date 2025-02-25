@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Календарь с праздниками</title>
+    <style>
+        /* Общие стили */
+        /* Общие стили */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+}
+
+/* Шапка профиля */
+#profile-header {
+    background-color: #007BFF;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#profile-header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+#profile-header button {
+    padding: 10px 20px;
+    background-color: #ffffff;
+    color: rgb(0, 0, 0);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#profile-header button:hover {
+    background-color: #a5a5a5;
+}
+
+/* Логотип и кнопки авторизации */
+#auth-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+}
+
+#auth-section .logo {
+    height: 40px;
+    /* Высота логотипа */
+}
+
+#auth-section .auth-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+#auth-section button {
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#auth-section button:hover {
+    background-color: #0056b3;
+}
+
+/* Меню пользователя */
+#user-menu {
+    position: relative;
+    display: inline-block;
+}
+
+#user-menu .username {
+    cursor: pointer;
+    color: #007BFF;
+    font-weight: bold;
+}
+
+#user-menu .dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+}
+
+#user-menu .dropdown button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    text-align: left;
+    background-color: white;
+    border: none;
+    cursor: pointer;
+}
+
+#user-menu .dropdown button:hover {
+    background-color: #f0f0f0;
+}
+
+/* Стили для календаря */
+#calendar {
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 300px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#calendar table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#calendar th,
+#calendar td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+    color: black; /* Черный цвет текста по умолчанию */
+    transition: color 0.3s ease; /* Плавное изменение цвета */
+}
+
+#calendar th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+#calendar td:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+    transform: translateY(-2px);
+    transition: transform 0.2s;
+}
+
+.arrow {
+    font-size: 20px;
+    cursor: pointer;
+    color: #007BFF;
+}
+
+.arrow:hover {
+    color: #0056b3;
+}
+
+.month-year {
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Стили для сегодняшнего числа */
+#calendar td.today {
+    background-color: #007BFF; /* Синий цвет фона */
+    color: white; /* Белый цвет текста */
+    font-weight: bold;
+}
+
+/* Стили при наведении на сегодняшнее число */
+#calendar td.today:hover {
+    color: rgb(6, 55, 253); /* Оранжевый цвет сохраняется при наведении */
+}
+
+/* Стили для праздников */
+#calendar td.holiday {
+    color: black; /* Черный цвет текста для праздников */
+}
+
+/* Стили при наведении на дату с праздником */
+#calendar td.holiday:hover {
+    color: red; /* Красный цвет текста при наведении */
+    cursor: pointer;
+}
+
+/* Стили для кнопки "Добавить праздник" */
+#add-holiday-btn {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #007BFF, #0056b3);
+    /* Градиентный фон */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    /* Закругленные углы */
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* Тень */
+    transition: all 0.3s ease;
+    /* Плавные переходы */
+}
+
+#add-holiday-btn:hover {
+    background: linear-gradient(135deg, #0056b3, #003d80);
+    /* Градиент при наведении */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    /* Увеличенная тень при наведении */
+    transform: translateY(-2px);
+    /* Легкий подъем кнопки */
+}
+
+#add-holiday-btn:active {
+    transform: translateY(0);
+    /* Возврат кнопки в исходное положение при нажатии */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* Возврат тени */
+}
+
+/* Стили для информации о праздниках */
+#holiday-info {
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 300px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#holiday-info h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+#holiday-info ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#holiday-info li {
+    padding: 5px 0;
+    color: #555;
+}
+
+/* Стили для модальных окон */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    color: #007BFF;
+}
+
+.modal-content label {
+    display: block;
+    margin: 10px 0 5px;
+    color: #333;
+}
+
+.modal-content input {
+    width: 94%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.modal-content button {
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.modal-content button:hover {
+    background-color: #0056b3;
+}
+
+.close {
+    float: right;
+    font-size: 24px;
+    cursor: pointer;
+    color: #555;
+}
+
+.close:hover {
+    color: #000;
+}
+
+/* Адаптация для мобильных устройств */
+@media (max-width: 600px) {
+    #calendar {
+        width: 90%;
+        padding: 10px;
+    }
+
+    #calendar th,
+    #calendar td {
+        padding: 8px;
+    }
+
+    .month-year {
+        font-size: 18px;
+    }
+
+    .arrow {
+        font-size: 18px;
+    }
+
+    #profile-header h1 {
+        font-size: 20px;
+    }
+
+    #profile-header button {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+
+    .modal-content {
+        width: 90%;
+    }
+}
+    </style>
+</head>
+
+<body>
+
+    <!-- Шапка профиля -->
+    <div id="profile-header">
+        <h1>Календарь праздников</h1>
+        <button id="company-info-btn">О нас</button>
+    </div>
+
+    <!-- Логотип и кнопки авторизации -->
+    <div id="auth-section">
+        <img src="images/logo.png" alt="Логотип" class="logo">
+        <div id="auth-buttons" class="auth-buttons">
+            <button id="login-btn">Войти</button>
+            <button id="register-btn">Регистрация</button>
+        </div>
+        <div id="user-menu" style="display: none;">
+            <span class="username" id="username-display"></span>
+            <div class="dropdown">
+                <button id="logout-btn">Выйти</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Календарь -->
+    <div id="calendar">
+        <div class="month-year">
+            <span class="arrow" id="prev-month">←</span>
+            <span id="month-year"></span>
+            <span class="arrow" id="next-month">→</span>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Пн</th>
+                    <th>Вт</th>
+                    <th>Ср</th>
+                    <th>Чт</th>
+                    <th>Пт</th>
+                    <th>Сб</th>
+                    <th>Вс</th>
+                </tr>
+            </thead>
+            <tbody id="calendar-body">
+                <!-- Календарь будет отрисовываться здесь -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Информация о праздниках -->
+    <div id="holiday-info"></div>
+
+    <!-- Кнопка для добавления праздника -->
+    <div style="text-align: center; margin: 20px;">
+        <button id="add-holiday-btn">Добавить праздник</button>
+    </div>
+
+    <!-- Модальное окно "О нас" -->
+    <div id="about-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>О нас</h2>
+            <p>
+                Мы — компания, специализирующаяся на организации праздников и мероприятий.
+                Наша цель — сделать ваш праздник незабываемым! Мы предлагаем широкий спектр услуг,
+                включая оформление и развлечения. Доверьте нам ваше мероприятие,
+                и мы сделаем его идеальным!
+            </p>
+        </div>
+    </div>
+
+    <!-- Модальное окно "Войти" -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Войти</h2>
+            <form id="login-form">
+                <label for="login-email">Email:</label>
+                <input type="email" id="login-email" required>
+                <label for="login-password">Пароль:</label>
+                <input type="password" id="login-password" required>
+                <button type="submit">Войти</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно "Регистрация" -->
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Регистрация</h2>
+            <form id="register-form">
+                <label for="register-username">Имя пользователя:</label>
+                <input type="text" id="register-username" required>
+                <label for="register-email">Email:</label>
+                <input type="email" id="register-email" required>
+                <label for="register-password">Пароль:</label>
+                <input type="password" id="register-password" required>
+                <button type="submit">Зарегистрироваться</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно "Добавить праздник" -->
+    <div id="add-holiday-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Добавить праздник</h2>
+            <form id="add-holiday-form">
+                <label for="holiday-date">Дата:</label>
+                <input type="date" id="holiday-date" required>
+                <label for="holiday-name">Название праздника:</label>
+                <input type="text" id="holiday-name" required>
+                <button type="submit">Добавить</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let currentDate = new Date();
+
+            // Список всех праздников в России на 2025 год
+            const holidays = [
+                { date: "2025-01-01", name: "Новый Год" },
+                { date: "2025-01-07", name: "Рождество Христово" },
+                { date: "2025-02-23", name: "День Защитника Отечества" },
+                { date: "2025-03-08", name: "Международный Женский День" },
+                { date: "2025-05-01", name: "Праздник Весны и Труда" },
+                { date: "2025-05-09", name: "День Победы" },
+                { date: "2025-06-12", name: "День России" },
+                { date: "2025-11-04", name: "День Народного Единства" },
+                { date: "2025-01-25", name: "Татьянин День" },
+                { date: "2025-02-15", name: "День памяти воинов-интернационалистов" },
+                { date: "2025-04-12", name: "День Космонавтики" },
+                { date: "2025-04-19", name: "День принятия Крыма в состав Российской империи" },
+                { date: "2025-04-26", name: "День памяти погибших в радиационных авариях и катастрофах" },
+                { date: "2025-05-31", name: "День Шахмат" },
+                { date: "2025-06-22", name: "День Памяти и Скорби" },
+                { date: "2025-08-22", name: "День государственного флага России" },
+                { date: "2025-10-04", name: "День Учителя" },
+                { date: "2025-12-31", name: "Новый Год" },
+                // ЯНВАРЬ
+                { date: "2025-01-01", name: "День, когда стоит подумать о времени и о себе" },
+                { date: "2025-01-02", name: "День высоких идеалов" },
+                { date: "2025-01-03", name: "День фольклора" },
+                { date: "2025-01-04", name: "День флирта" },
+                { date: "2025-01-05", name: "День рыночной экономики" },
+                { date: "2025-01-06", name: "День мечтателя" },
+                { date: "2025-01-08", name: "День тихой благости" },
+                { date: "2025-01-09", name: "День авантюриста" },
+                { date: "2025-01-10", name: "Путанин день" },
+                { date: "2025-01-11", name: "Хозяйственный день" },
+                { date: "2025-01-12", name: "День чудака" },
+                { date: "2025-01-13", name: "День старого нового года" },
+                { date: "2025-01-14", name: "День свободной печати" },
+                { date: "2025-01-15", name: "День фигового листа" },
+                { date: "2025-01-16", name: "День потомства" },
+                { date: "2025-01-17", name: "День неудачника" },
+                { date: "2025-01-18", name: "День человека" },
+                { date: "2025-01-19", name: "День Божьего присутствия" },
+                { date: "2025-01-20", name: "День анекдота" },
+                { date: "2025-01-21", name: "День муравья и стрекозы" },
+                { date: "2025-01-22", name: "День молчания" },
+                { date: "2025-01-23", name: "День пенсионера" },
+                { date: "2025-01-24", name: "Коллективный день" },
+                { date: "2025-01-25", name: "Застольный день" },
+                { date: "2025-01-26", name: "День чудес" },
+                { date: "2025-01-27", name: "День прелюбодея" },
+                { date: "2025-01-28", name: "День Божьей благодати" },
+                { date: "2025-01-29", name: "День философа" },
+                { date: "2025-01-30", name: "День культуры и отдыха" },
+                { date: "2025-01-31", name: "День домашней хозяйки" },
+
+                // ФЕВРАЛЬ
+                { date: "2025-02-01", name: "День государственных деятелей" },
+                { date: "2025-02-02", name: "День синего чулка" },
+                { date: "2025-02-03", name: "День стреляного воробья" },
+                { date: "2025-02-04", name: "Праздник хорошего настроения" },
+                { date: "2025-02-05", name: "День эрудита" },
+                { date: "2025-02-06", name: "День правды" },
+                { date: "2025-02-07", name: "День примет и суеверий" },
+                { date: "2025-02-09", name: "День артиста" },
+                { date: "2025-02-10", name: "День утрат" },
+                { date: "2025-02-12", name: "День интеллигента" },
+                { date: "2025-02-13", name: "День искусства" },
+                { date: "2025-02-14", name: "День любви" },
+                { date: "2025-02-15", name: "День охламона" },
+                { date: "2025-02-16", name: "День надежды" },
+                { date: "2025-02-17", name: "День космополита" },
+                { date: "2025-02-18", name: "День просвещения" },
+                { date: "2025-02-19", name: "День гадкого утенка" },
+                { date: "2025-02-20", name: "Прощенный день" },
+                { date: "2025-02-21", name: "День вокала" },
+                { date: "2025-02-22", name: "День Творения" },
+                { date: "2025-02-23", name: "День ветерана" },
+                { date: "2025-02-24", name: "День опасных связей" },
+                { date: "2025-02-25", name: "День охраны здоровья" },
+                { date: "2025-02-26", name: "День художника" },
+                { date: "2025-02-27", name: "День оптимиста" },
+                { date: "2025-02-28", name: "День пессимиста" },
+                // МАРТ
+                { date: "2025-03-01", name: "День весны" },
+                { date: "2025-03-02", name: "День свадьбы всех желающих" },
+                { date: "2025-03-03", name: "День переселения душ" },
+                { date: "2025-03-04", name: "День заключённого" },
+                { date: "2025-03-05", name: "День возмездия" },
+                { date: "2025-03-06", name: "Всероссийский день гурмана" },
+                { date: "2025-03-07", name: "День разума" },
+                { date: "2025-03-08", name: "Международный женский день" },
+                { date: "2025-03-09", name: "Международный день домашних насекомых" },
+                { date: "2025-03-10", name: "День риска" },
+                { date: "2025-03-11", name: "День воспоминаний" },
+                { date: "2025-03-12", name: "Воспитательный день" },
+                { date: "2025-03-13", name: "День диеты" },
+                { date: "2025-03-14", name: "День рождения Эйнштейна" },
+                { date: "2025-03-15", name: "День двоеженца" },
+                { date: "2025-03-16", name: "День прогресса" },
+                { date: "2025-03-17", name: "День загадочной славянской души" },
+                { date: "2025-03-18", name: "День истории" },
+                { date: "2025-03-19", name: "Международный день торговли" },
+                { date: "2025-03-20", name: "День согласия с действительностью" },
+                { date: "2025-03-21", name: "День шута" },
+                { date: "2025-03-22", name: "День алкоголика" },
+                { date: "2025-03-23", name: "День романтика" },
+                { date: "2025-03-24", name: "Международный день борьбы с депрессией" },
+                { date: "2025-03-25", name: "День эволюции" },
+                { date: "2025-03-26", name: "Будний день" },
+                { date: "2025-03-27", name: "День театра" },
+                { date: "2025-03-28", name: "Всемирный день историка" },
+                { date: "2025-03-29", name: "День фортуны" },
+                { date: "2025-03-30", name: "День жертв на алтарь" },
+                { date: "2025-03-31", name: "День обрядов и традиций" },
+
+                // АПРЕЛЬ
+                { date: "2025-04-01", name: "День смеха" },
+                { date: "2025-04-02", name: "День гегемона" },
+                { date: "2025-04-03", name: "Праздник семейной ссоры" },
+                { date: "2025-04-04", name: "День мудреца" },
+                { date: "2025-04-05", name: "День набухания почек" },
+                { date: "2025-04-06", name: "День русской народной сказки" },
+                { date: "2025-04-07", name: "День анархиста" },
+                { date: "2025-04-08", name: "День грехов" },
+                { date: "2025-04-10", name: "День мелкого жулика" },
+                { date: "2025-04-11", name: "Вселенский родительский день" },
+                { date: "2025-04-12", name: "День космонавтики" },
+                { date: "2025-04-13", name: "День хождения ва банк" },
+                { date: "2025-04-14", name: "День треугольный" },
+                { date: "2025-04-15", name: "День лысых" },
+                { date: "2025-04-16", name: "День превращения обезьяны в человека" },
+                { date: "2025-04-17", name: "День денег" },
+                { date: "2025-04-18", name: "День туриста" },
+                { date: "2025-04-19", name: "День права на труд" },
+                { date: "2025-04-20", name: "День поисков смысла жизни" },
+                { date: "2025-04-21", name: "День любовных свиданий" },
+                { date: "2025-04-22", name: "День всех вождей" },
+                { date: "2025-04-23", name: "День фаталиста" },
+                { date: "2025-04-24", name: "День ханжи и лицемера" },
+                { date: "2025-04-25", name: "День гуляки" },
+                { date: "2025-04-26", name: "Бизнесвумен дэй" },
+                { date: "2025-04-27", name: "День аскета" },
+                { date: "2025-04-28", name: "День радости, что жив" },
+                { date: "2025-04-29", name: "День танца" },
+                { date: "2025-04-30", name: "День Израиля" }
+            ];
+
+            // Локальное хранилище для пользователей
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+
+            // Локальное хранилище для пользовательских праздников
+            let userHolidays = JSON.parse(localStorage.getItem('userHolidays')) || [];
+
+            // Функция для отображения месяца и года
+            function displayMonthYear() {
+                const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+                const month = currentDate.getMonth();
+                const year = currentDate.getFullYear();
+                document.getElementById('month-year').textContent = `${monthNames[month]} ${year}`;
+                renderCalendar(month, year);
+            }
+
+            // Функция для рендеринга календаря
+            function renderCalendar(month, year) {
+                const firstDay = (new Date(year, month, 1).getDay() + 6) % 7; // Переводим день недели, чтобы Понедельник был 0
+                const daysInMonth = new Date(year, month + 1, 0).getDate(); // Количество дней в месяце
+
+                // Получаем сегодняшнюю дату
+                const today = new Date();
+                const todayDay = today.getDate();
+                const todayMonth = today.getMonth() + 1;
+                const todayYear = today.getFullYear();
+
+                let calendarHTML = '';
+                let day = 1;
+
+                // Заполнение календаря
+                for (let i = 0; i < 6; i++) { // максимум 6 недель в месяце
+                    calendarHTML += '<tr>';
+                    for (let j = 0; j < 7; j++) {
+                        if (i === 0 && j < firstDay) {
+                            calendarHTML += '<td></td>';
+                        } else if (day <= daysInMonth) {
+                            const dateString = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                            const holiday = holidays.find(h => h.date === dateString);
+                            const userHoliday = userHolidays.find(h => h.date === dateString);
+                            const isToday = (day === todayDay && month + 1 === todayMonth && year === todayYear);
+
+                            let cellClass = 'day';
+                            if (holiday || userHoliday) {
+                                cellClass += ' holiday';
+                            }
+                            if (isToday) {
+                                cellClass += ' today';
+                            }
+
+                            calendarHTML += `<td class="${cellClass}" data-day="${day}" data-month="${month + 1}" data-year="${year}">${day}</td>`;
+                            day++;
+                        } else {
+                            calendarHTML += '<td></td>';
+                        }
+                    }
+                    calendarHTML += '</tr>';
+                    if (day > daysInMonth) break;
+                }
+
+                document.getElementById('calendar-body').innerHTML = calendarHTML;
+
+                // Привязка обработчиков событий для дней
+                const dayCells = document.querySelectorAll('.day');
+                dayCells.forEach(cell => {
+                    cell.addEventListener('click', function () {
+                        const day = this.getAttribute('data-day');
+                        const month = this.getAttribute('data-month');
+                        const year = this.getAttribute('data-year');
+                        showHolidayInfo(day, month, year);
+                    });
+                });
+            }
+
+            // Функция для изменения месяца
+            function changeMonth(direction) {
+                let newMonth = currentDate.getMonth() + direction;
+                let newYear = currentDate.getFullYear();
+
+                if (newMonth < 0) {
+                    newMonth = 11; // Декабрь
+                    newYear--;
+                } else if (newMonth > 11) {
+                    newMonth = 0; // Январь
+                    newYear++;
+                }
+
+                currentDate.setMonth(newMonth);
+                currentDate.setFullYear(newYear);
+                displayMonthYear();
+            }
+
+            // Функция для отображения информации о праздниках
+            function showHolidayInfo(day, month, year) {
+                const holidayInfoElement = document.getElementById('holiday-info');
+                const dateString = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                const holidaysOnDate = holidays.filter(holiday => holiday.date === dateString);
+                const userHolidaysOnDate = userHolidays.filter(holiday => holiday.date === dateString);
+
+                let holidayInfo = `<h3>Праздники на ${day}.${month}.${year}:</h3><ul>`;
+                if (holidaysOnDate.length > 0 || userHolidaysOnDate.length > 0) {
+                    holidaysOnDate.forEach(holiday => {
+                        holidayInfo += `<li>${holiday.name}</li>`;
+                    });
+                    userHolidaysOnDate.forEach(holiday => {
+                        holidayInfo += `<li>${holiday.name} (добавлен пользователем)</li>`;
+                    });
+                } else {
+                    holidayInfo += "<li>На эту дату нет праздников.</li>";
+                }
+                holidayInfo += "</ul>";
+                holidayInfoElement.innerHTML = holidayInfo;
+            }
+
+            // Обработчики кликов для стрелок
+            document.getElementById('prev-month').addEventListener('click', () => changeMonth(-1));
+            document.getElementById('next-month').addEventListener('click', () => changeMonth(1));
+
+            // Модальные окна
+            const aboutModal = document.getElementById('about-modal');
+            const loginModal = document.getElementById('login-modal');
+            const registerModal = document.getElementById('register-modal');
+            const addHolidayModal = document.getElementById('add-holiday-modal');
+
+            const loginBtn = document.getElementById('login-btn');
+            const registerBtn = document.getElementById('register-btn');
+            const companyInfoBtn = document.getElementById('company-info-btn');
+            const addHolidayBtn = document.getElementById('add-holiday-btn');
+
+            const closeButtons = document.querySelectorAll('.close');
+
+            // Открыть модальное окно "О нас"
+            companyInfoBtn.addEventListener('click', () => {
+                aboutModal.style.display = 'flex';
+            });
+
+            // Открыть модальное окно "Войти"
+            loginBtn.addEventListener('click', () => {
+                loginModal.style.display = 'flex';
+            });
+
+            // Открыть модальное окно "Регистрация"
+            registerBtn.addEventListener('click', () => {
+                registerModal.style.display = 'flex';
+            });
+
+            // Открыть модальное окно "Добавить праздник"
+            addHolidayBtn.addEventListener('click', () => {
+                if (!currentUser) {
+                    alert('Для добавления праздника необходимо войти в систему.');
+                    return;
+                }
+                addHolidayModal.style.display = 'flex';
+            });
+
+            // Закрыть модальные окна
+            closeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    aboutModal.style.display = 'none';
+                    loginModal.style.display = 'none';
+                    registerModal.style.display = 'none';
+                    addHolidayModal.style.display = 'none';
+                });
+            });
+
+            // Закрыть модальные окна при клике вне их
+            window.addEventListener('click', (event) => {
+                if (event.target === aboutModal || event.target === loginModal || event.target === registerModal || event.target === addHolidayModal) {
+                    aboutModal.style.display = 'none';
+                    loginModal.style.display = 'none';
+                    registerModal.style.display = 'none';
+                    addHolidayModal.style.display = 'none';
+                }
+            });
+
+            // Обработка формы регистрации
+            document.getElementById('register-form').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const username = document.getElementById('register-username').value;
+                const email = document.getElementById('register-email').value;
+                const password = document.getElementById('register-password').value;
+
+                // Проверка, существует ли пользователь с таким email
+                const userExists = users.some(user => user.email === email);
+                if (userExists) {
+                    alert('Пользователь с таким email уже зарегистрирован.');
+                    return;
+                }
+
+                // Добавление нового пользователя
+                users.push({ username, email, password });
+                localStorage.setItem('users', JSON.stringify(users));
+
+                alert('Регистрация выполнена!');
+                registerModal.style.display = 'none';
+            });
+
+            // Обработка формы входа
+            document.getElementById('login-form').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+
+                // Поиск пользователя
+                const user = users.find(user => user.email === email && user.password === password);
+                if (user) {
+                    currentUser = user;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    updateAuthUI();
+                    alert('Вход выполнен!');
+                    loginModal.style.display = 'none';
+                } else {
+                    alert('Неверный email или пароль.');
+                }
+            });
+
+            // Выход из аккаунта
+            document.getElementById('logout-btn').addEventListener('click', function () {
+                currentUser = null;
+                localStorage.removeItem('currentUser');
+                updateAuthUI();
+                alert('Вы вышли из аккаунта.');
+            });
+
+            // Обработка формы добавления праздника
+            document.getElementById('add-holiday-form').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const date = document.getElementById('holiday-date').value;
+                const name = document.getElementById('holiday-name').value;
+
+                // Добавление праздника
+                userHolidays.push({ date, name });
+                localStorage.setItem('userHolidays', JSON.stringify(userHolidays));
+
+                alert('Праздник добавлен!');
+                addHolidayModal.style.display = 'none';
+                displayMonthYear(); // Перерисовка календаря
+            });
+
+            // Обновление интерфейса авторизации
+            function updateAuthUI() {
+                const authButtons = document.getElementById('auth-buttons');
+                const userMenu = document.getElementById('user-menu');
+                const usernameDisplay = document.getElementById('username-display');
+
+                if (currentUser) {
+                    authButtons.style.display = 'none';
+                    userMenu.style.display = 'block';
+                    usernameDisplay.textContent = currentUser.username;
+                } else {
+                    authButtons.style.display = 'flex';
+                    userMenu.style.display = 'none';
+                }
+            }
+
+            // Открытие/закрытие меню пользователя
+            document.getElementById('username-display').addEventListener('click', function () {
+                const dropdown = document.querySelector('#user-menu .dropdown');
+                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            });
+
+            // Инициализация интерфейса при загрузке
+            updateAuthUI();
+
+            // Инициализация календаря
+            displayMonthYear();
+        });
+    </script>
+
+</body>
+
+</html>
